@@ -145,4 +145,75 @@ public class RecipeRepositoryTest {
         assertThat(recipes.get(0).getIngredientList(), is(notNullValue()));
         assertThat(recipes.get(0).getIngredientList().size(), is(2));
     }
+
+    @Test
+    public void testSearchRecipes() {
+        Set<String> includeIngredients = new HashSet<>();
+        includeIngredients.add("Salt");
+
+        Set<Recipe> recipes = repository.searchRecipes(null, null, includeIngredients, null, null, null);
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(3));
+    }
+
+    @Test
+    public void testSearchRecipes_WithAllParams() {
+        Set<String> includeIngredients = new HashSet<>();
+        includeIngredients.add("Salt");
+
+        Set<String> excludeIngredients = new HashSet<>();
+        excludeIngredients.add("Pepper");
+
+        Set<Recipe> recipes = repository.searchRecipes(true, 2, includeIngredients, excludeIngredients, "bake", "Salt");
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(1));
+        assertThat(recipes.iterator().next().getName(), is("Recipe 2"));
+    }
+
+    @Test
+    public void testSearchRecipes_NoMatch() {
+        Set<String> includeIngredients = new HashSet<>();
+        includeIngredients.add("Flour");
+
+        Set<Recipe> recipes = repository.searchRecipes(null, null, includeIngredients, null, null, null);
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(0));
+    }
+
+    @Test
+    public void testSearchRecipes_WithNullParams() {
+        Set<Recipe> recipes = repository.searchRecipes(null, null, null, null, null, null);
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(3));
+    }
+
+    @Test
+    public void testSearchRecipes_WithOnlyIsVegetarian() {
+        Set<Recipe> recipes = repository.searchRecipes(true, null, null, null, null, null);
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(2));
+    }
+
+    @Test
+    public void testSearchRecipes_WithOnlyServingCapacity() {
+        Set<Recipe> recipes = repository.searchRecipes(null, 4, null, null, null, null);
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(1));
+        assertThat(recipes.iterator().next().getServingCapacity(), is(4));
+    }
+
+    @Test
+    public void testSearchRecipes_WithOnlyInstructions() {
+        Set<Recipe> recipes = repository.searchRecipes(null, null, null, null, "cook", null);
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(1));
+        assertThat(recipes.iterator().next().getInstructions().toLowerCase(), is("mix and cook."));
+    }
+
+    @Test
+    public void testSearchRecipes_WithOnlyIngredientName() {
+        Set<Recipe> recipes = repository.searchRecipes(null, null, null, null, null, "Salt");
+        assertThat(recipes, is(notNullValue()));
+        assertThat(recipes.size(), is(3));
+    }
 }

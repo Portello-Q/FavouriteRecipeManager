@@ -6,7 +6,6 @@ import nl.quintor.service.RecipeService;
 import nl.quintor.web.rest.dto.RecipeDto;
 import nl.quintor.web.rest.transformer.RecipeTransformer;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -65,7 +67,6 @@ public class RecipeControllerTest {
         recipeDto.setInstructions("Mix and bake.");
         recipeDto.setIsVegetarian(true);
 
-        Recipe recipe = RecipeTransformer.toEntity(recipeDto);
         Recipe savedRecipe = new Recipe();
         savedRecipe.setId(1L);
         savedRecipe.setName("Test Recipe");
@@ -229,6 +230,54 @@ public class RecipeControllerTest {
 
         MockHttpServletResponse response = mockMvc.perform(
                         delete("/recipe/1")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus(), CoreMatchers.is(HttpStatus.NOT_FOUND.value()));
+    }
+
+    @Test
+    public void searchRecipesTest() throws Exception {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        recipe.setName("Vegetarian Pizza");
+        recipe.setType("Main Course");
+        recipe.setServingCapacity(4);
+        recipe.setInstructions("Bake in the oven.");
+        recipe.setIsVegetarian(true);
+
+        Set<Recipe> recipes = new HashSet<>();
+        recipes.add(recipe);
+
+        given(recipeService.searchRecipes(true, 4, Collections.singleton("Tomato"), Collections.singleton("Meat"), "Bake", "Tomato")).willReturn(recipes);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get("/recipe/search")
+                                .param("isVegetarian", "true")
+                                .param("servingCapacity", "4")
+                                .param("includeIngredients", "Tomato")
+                                .param("excludeIngredients", "Meat")
+                                .param("instructions", "Bake")
+                                .param("ingredientName", "Tomato")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus(), CoreMatchers.is(HttpStatus.OK.value()));
+        assertThat(response.getContentAsString(), CoreMatchers.containsString("Vegetarian Pizza"));
+    }
+
+    @Test
+    public void searchRecipesNotFoundTest() throws Exception {
+        given(recipeService.searchRecipes(true, 4, Collections.singleton("Tomato"), Collections.singleton("Meat"), "Bake", "Tomato")).willReturn(Collections.emptySet());
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get("/recipe/search")
+                                .param("isVegetarian", "true")
+                                .param("servingCapacity", "4")
+                                .param("includeIngredients", "Tomato")
+                                .param("excludeIngredients", "Meat")
+                                .param("instructions", "Bake")
+                                .param("ingredientName", "Tomato")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 

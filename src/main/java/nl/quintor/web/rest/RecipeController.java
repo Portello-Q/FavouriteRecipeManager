@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for managing recipes.
+ * Provides endpoints for creating, retrieving, updating, deleting, and searching recipes.
+ */
 @RestController
 @RequestMapping("/recipe")
 @Slf4j
@@ -31,6 +35,12 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
+    /**
+     * Creates a new recipe.
+     *
+     * @param recipeDto The recipe data transfer object containing the recipe details.
+     * @return ResponseEntity containing the created recipe.
+     */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create a new recipe")
     @ApiResponse(responseCode = "201", description = "Recipe created successfully")
@@ -42,6 +52,11 @@ public class RecipeController {
         return ResponseEntity.status(201).body(savedRecipeDto);
     }
 
+    /**
+     * Retrieves all recipes.
+     *
+     * @return ResponseEntity containing a list of all recipes.
+     */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all recipes")
     @ApiResponses({
@@ -60,6 +75,12 @@ public class RecipeController {
         return ResponseEntity.ok(recipeDtos);
     }
 
+    /**
+     * Retrieves a recipe by its ID.
+     *
+     * @param id The ID of the recipe to retrieve.
+     * @return ResponseEntity containing the recipe if found.
+     */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get a recipe by ID")
     @ApiResponses({
@@ -76,6 +97,13 @@ public class RecipeController {
         return ResponseEntity.ok(recipeDto);
     }
 
+    /**
+     * Updates an existing recipe.
+     *
+     * @param id The ID of the recipe to update.
+     * @param recipeDto The recipe data transfer object containing the updated recipe details.
+     * @return ResponseEntity containing the updated recipe.
+     */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Update an existing recipe")
     @ApiResponses({
@@ -85,7 +113,6 @@ public class RecipeController {
     public ResponseEntity<RecipeDto> updateRecipe(@PathVariable Long id, @RequestBody @Valid RecipeDto recipeDto) {
         log.trace("Processing update recipe request");
         Recipe existingRecipe = recipeService.getRecipeById(id);
-        System.out.println("recipe value: " + existingRecipe);
         if (existingRecipe == null) {
             return ResponseEntity.notFound().build();
         }
@@ -97,6 +124,12 @@ public class RecipeController {
         return ResponseEntity.ok(savedRecipeDto);
     }
 
+    /**
+     * Deletes a recipe by its ID.
+     *
+     * @param id The ID of the recipe to delete.
+     * @return ResponseEntity indicating the deletion status.
+     */
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "Delete a recipe by ID")
     @ApiResponses({
@@ -113,6 +146,18 @@ public class RecipeController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Searches for recipes based on various criteria.
+     * Returns recipes that match all provided criteria.
+     *
+     * @param isVegetarian Filter recipes based on whether they are vegetarian. If null, this criterion is ignored.
+     * @param servingCapacity Filter recipes by exact match for serving capacity. If null, this criterion is ignored.
+     * @param includeIngredients Filter recipes that include certain ingredients. If null, this criterion is ignored.
+     * @param excludeIngredients Filter recipes that exclude certain ingredients. If null, this criterion is ignored.
+     * @param instructions Filter recipes containing specific text in their instructions. If null, this criterion is ignored.
+     * @param ingredientName Filter recipes containing a specific ingredient name. If null, this criterion is ignored.
+     * @return ResponseEntity containing a set of recipes that match the criteria.
+     */
     @GetMapping("/search")
     @Operation(summary = "Search for recipes", description = "Search for recipes based on various criteria. Returns recipes that match all provided criteria.")
     @ApiResponses({
