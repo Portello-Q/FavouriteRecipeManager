@@ -30,6 +30,7 @@ Before running the application, ensure you have the following installed:
 To compile the project, use Gradle:
 
 ```bash
+navigate to 'Favourite-recipe-manager'
 ./gradlew clean build
 ```
 
@@ -38,12 +39,14 @@ To compile the project, use Gradle:
 To run the application, execute the following Gradle command:
 
 ```bash
+navigate to 'Favourite-recipe-manager'
 ./gradlew bootRun
 ```
 
 Alternatively, you can build the project into a JAR file and run it:
 
 ```bash
+navigate to 'Favourite-recipe-manager'
 ./gradlew clean build
 java -jar build/libs/recipe-management-0.0.1-SNAPSHOT.jar
 ```
@@ -55,10 +58,15 @@ Ensure MySQL is running and the database configuration in `application.propertie
 To run the tests, use the following Gradle command:
 
 ```bash
+navigate to 'Favourite-recipe-manager'
 ./gradlew test
 ```
 
 This will run all the unit and integration tests defined in the project.
+
+## UML class diagram
+
+![plot](./uml.png)
 
 ## API Endpoints
 

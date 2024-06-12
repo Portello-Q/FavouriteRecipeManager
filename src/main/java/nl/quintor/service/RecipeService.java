@@ -4,14 +4,17 @@ import nl.quintor.model.Ingredient;
 import nl.quintor.model.Recipe;
 import nl.quintor.repository.IngredientRepository;
 import nl.quintor.repository.RecipeRepository;
+import nl.quintor.repository.RecipeSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
 public class RecipeService {
@@ -53,6 +56,13 @@ public class RecipeService {
 
     public Set<Recipe> searchRecipes(Boolean isVegetarian, Integer servingCapacity, Set<String> includeIngredients,
                                      Set<String> excludeIngredients, String instructions, String ingredientName) {
-        return recipeRepository.searchRecipes(isVegetarian, servingCapacity, includeIngredients, excludeIngredients, instructions, ingredientName);
+        Specification<Recipe> spec = where(RecipeSpecifications.isVegetarian(isVegetarian))
+                .and(RecipeSpecifications.servingCapacity(servingCapacity))
+                .and(RecipeSpecifications.includeIngredients(includeIngredients))
+                .and(RecipeSpecifications.excludeIngredients(excludeIngredients))
+                .and(RecipeSpecifications.instructionsContain(instructions))
+                .and(RecipeSpecifications.ingredientNameContains(ingredientName));
+
+        return new HashSet<>(recipeRepository.findAll(spec));
     }
 }

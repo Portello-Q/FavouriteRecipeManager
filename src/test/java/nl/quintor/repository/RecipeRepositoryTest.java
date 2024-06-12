@@ -17,9 +17,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static nl.quintor.repository.RecipeSpecifications.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -151,7 +153,12 @@ public class RecipeRepositoryTest {
         Set<String> includeIngredients = new HashSet<>();
         includeIngredients.add("Salt");
 
-        Set<Recipe> recipes = repository.searchRecipes(null, null, includeIngredients, null, null, null);
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(null))
+                .and(servingCapacity(null))
+                .and(includeIngredients(includeIngredients))
+                .and(excludeIngredients(null))
+                .and(instructionsContain(null))
+                .and(ingredientNameContains(null)));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(3));
     }
@@ -164,10 +171,15 @@ public class RecipeRepositoryTest {
         Set<String> excludeIngredients = new HashSet<>();
         excludeIngredients.add("Pepper");
 
-        Set<Recipe> recipes = repository.searchRecipes(true, 2, includeIngredients, excludeIngredients, "bake", "Salt");
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(true))
+                .and(servingCapacity(2))
+                .and(includeIngredients(includeIngredients))
+                .and(excludeIngredients(excludeIngredients))
+                .and(instructionsContain("bake"))
+                .and(ingredientNameContains("Salt")));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(1));
-        assertThat(recipes.iterator().next().getName(), is("Recipe 2"));
+        assertThat(recipes.get(0).getName(), is("Recipe 2"));
     }
 
     @Test
@@ -175,44 +187,74 @@ public class RecipeRepositoryTest {
         Set<String> includeIngredients = new HashSet<>();
         includeIngredients.add("Flour");
 
-        Set<Recipe> recipes = repository.searchRecipes(null, null, includeIngredients, null, null, null);
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(null))
+                .and(servingCapacity(null))
+                .and(includeIngredients(includeIngredients))
+                .and(excludeIngredients(null))
+                .and(instructionsContain(null))
+                .and(ingredientNameContains(null)));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(0));
     }
 
     @Test
     public void testSearchRecipes_WithNullParams() {
-        Set<Recipe> recipes = repository.searchRecipes(null, null, null, null, null, null);
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(null))
+                .and(servingCapacity(null))
+                .and(includeIngredients(null))
+                .and(excludeIngredients(null))
+                .and(instructionsContain(null))
+                .and(ingredientNameContains(null)));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(3));
     }
 
     @Test
     public void testSearchRecipes_WithOnlyIsVegetarian() {
-        Set<Recipe> recipes = repository.searchRecipes(true, null, null, null, null, null);
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(true))
+                .and(servingCapacity(null))
+                .and(includeIngredients(null))
+                .and(excludeIngredients(null))
+                .and(instructionsContain(null))
+                .and(ingredientNameContains(null)));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(2));
     }
 
     @Test
     public void testSearchRecipes_WithOnlyServingCapacity() {
-        Set<Recipe> recipes = repository.searchRecipes(null, 4, null, null, null, null);
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(null))
+                .and(servingCapacity(4))
+                .and(includeIngredients(null))
+                .and(excludeIngredients(null))
+                .and(instructionsContain(null))
+                .and(ingredientNameContains(null)));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(1));
-        assertThat(recipes.iterator().next().getServingCapacity(), is(4));
+        assertThat(recipes.get(0).getServingCapacity(), is(4));
     }
 
     @Test
     public void testSearchRecipes_WithOnlyInstructions() {
-        Set<Recipe> recipes = repository.searchRecipes(null, null, null, null, "cook", null);
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(null))
+                .and(servingCapacity(null))
+                .and(includeIngredients(null))
+                .and(excludeIngredients(null))
+                .and(instructionsContain("cook"))
+                .and(ingredientNameContains(null)));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(1));
-        assertThat(recipes.iterator().next().getInstructions().toLowerCase(), is("mix and cook."));
+        assertThat(recipes.get(0).getInstructions().toLowerCase(), is("mix and cook."));
     }
 
     @Test
     public void testSearchRecipes_WithOnlyIngredientName() {
-        Set<Recipe> recipes = repository.searchRecipes(null, null, null, null, null, "Salt");
+        List<Recipe> recipes = repository.findAll(where(isVegetarian(null))
+                .and(servingCapacity(null))
+                .and(includeIngredients(null))
+                .and(excludeIngredients(null))
+                .and(instructionsContain(null))
+                .and(ingredientNameContains("Salt")));
         assertThat(recipes, is(notNullValue()));
         assertThat(recipes.size(), is(3));
     }

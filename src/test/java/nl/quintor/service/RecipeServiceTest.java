@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -147,33 +149,31 @@ public class RecipeServiceTest {
         Set<String> excludeIngredients = new HashSet<>();
         excludeIngredients.add("Sugar");
 
-        Set<Recipe> expectedRecipes = new HashSet<>();
+        List<Recipe> expectedRecipes = new ArrayList<>();
         Recipe recipe = new Recipe();
         recipe.setName("Test Recipe");
         expectedRecipes.add(recipe);
 
-        when(recipeRepositoryMock.searchRecipes(true, 4, includeIngredients, excludeIngredients, "Mix", "Salt"))
-                .thenReturn(expectedRecipes);
+        when(recipeRepositoryMock.findAll(any(Specification.class))).thenReturn(expectedRecipes);
 
         Set<Recipe> result = recipeService.searchRecipes(true, 4, includeIngredients, excludeIngredients, "Mix", "Salt");
 
-        assertThat(result).isEqualTo(expectedRecipes);
-        verify(recipeRepositoryMock).searchRecipes(true, 4, includeIngredients, excludeIngredients, "Mix", "Salt");
+        assertThat(result).isEqualTo(new HashSet<>(expectedRecipes));
+        verify(recipeRepositoryMock).findAll(any(Specification.class));
     }
 
     @Test
     public void testSearchRecipes_WithNullParameters() {
-        Set<Recipe> expectedRecipes = new HashSet<>();
+        List<Recipe> expectedRecipes = new ArrayList<>();
         Recipe recipe = new Recipe();
         recipe.setName("Test Recipe");
         expectedRecipes.add(recipe);
 
-        when(recipeRepositoryMock.searchRecipes(null, null, null, null, null, null))
-                .thenReturn(expectedRecipes);
+        when(recipeRepositoryMock.findAll(any(Specification.class))).thenReturn(expectedRecipes);
 
         Set<Recipe> result = recipeService.searchRecipes(null, null, null, null, null, null);
 
-        assertThat(result).isEqualTo(expectedRecipes);
-        verify(recipeRepositoryMock).searchRecipes(null, null, null, null, null, null);
+        assertThat(result).isEqualTo(new HashSet<>(expectedRecipes));
+        verify(recipeRepositoryMock).findAll(any(Specification.class));
     }
 }
