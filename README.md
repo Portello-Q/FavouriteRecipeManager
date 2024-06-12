@@ -25,15 +25,6 @@ Before running the application, ensure you have the following installed:
    spring.jpa.hibernate.ddl-auto=update
    ```
 
-## How to Compile
-
-To compile the project, use Gradle:
-
-```bash
-navigate to 'Favourite-recipe-manager'
-./gradlew clean build
-```
-
 ## How to Run
 
 To run the application, execute the following Gradle command:

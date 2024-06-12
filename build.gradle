@@ -13,14 +13,14 @@ java {
 	}
 }
 
+repositories {
+	mavenCentral()
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-}
-
-repositories {
-	mavenCentral()
 }
 
 dependencies {
@@ -29,25 +29,25 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'mysql:mysql-connector-java:8.0.32'
 
-	//swagger
+	// swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly("org.projectlombok:lombok")
+	testAnnotationProcessor("org.projectlombok:lombok")
 
-	//in-memory-database
+	// in-memory database
 	implementation 'com.h2database:h2:2.2.224'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-
 tasks.named('bootRun') {
-	args = ["--spring.profiles.active=" + "profiles"]
+	args = ["--spring.profiles.active=profiles"]
 }
-
 
 tasks.named('test') {
 	useJUnitPlatform()
