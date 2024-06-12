@@ -55,7 +55,9 @@ navigate to 'Favourite-recipe-manager'
 
 This will run all the unit and integration tests defined in the project.
 
-## UML class diagram
+## UML
+
+Class diagram
 
 ![plot](./uml.png)
 
